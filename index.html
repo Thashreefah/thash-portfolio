@@ -9,7 +9,7 @@
 <body>
 
     <header>
-        <img src="https://via.placeholder.com/150" id="profileImage" alt="Profile">
+        <img src="profile.jpg" id="profileImage" alt="Profile">
         
         <h1 contenteditable="true">Thashreefah M</h1>
         
@@ -17,14 +17,14 @@
             Lecturer at Yenepoya College
         </p>
 
-        <input type="file" id="imageUpload">
+        <input type="file" id="imageUpload" class="edit-only">
     </header>
 
-    <div class="toolbar">
-    <button onclick="addSection()">Add Section</button>
-    <button onclick="savePortfolio()">Save Portfolio</button>
-    <button onclick="downloadPDF()">Download PDF</button>
-</div>
+    <div class="toolbar edit-only">
+        <button onclick="addSection()">Add Section</button>
+        <button onclick="savePortfolio()">Save Portfolio</button>
+        <button onclick="downloadPDF()">Download PDF</button>
+    </div>
 
     <main id="portfolio">
 
