@@ -1,0 +1,178 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f7fc;
+    color:#333;
+}
+
+/* HEADER */
+
+header{
+    background:green;
+    text-align:center;
+    padding:30px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+#profileImage{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    object-fit:cover;
+    border:5px solid #3498db;
+}
+
+header h1{
+    margin-top:15px;
+    color:#2c3e50;
+}
+
+header p{
+    margin-top:10px;
+    color:#555;
+}
+
+#imageUpload{
+    margin-top:15px;
+}
+
+/* TOOLBAR */
+
+.toolbar{
+    text-align:center;
+    margin:20px;
+}
+
+.toolbar button{
+    padding:10px 20px;
+    margin:5px;
+    border:none;
+    background:#3498db;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.toolbar button:hover{
+    background:#2980b9;
+}
+
+/* PORTFOLIO AREA */
+
+#portfolio{
+    width:90%;
+    max-width:1000px;
+    margin:auto;
+    padding-bottom:30px;
+}
+
+/* CARDS */
+
+.card{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    cursor:move;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+}
+
+.card h2{
+    color:#2c3e50;
+    margin-bottom:10px;
+}
+
+.card p,
+.card li{
+    line-height:1.8;
+}
+
+.card ul{
+    padding-left:20px;
+}
+
+/* DELETE BUTTON */
+
+.actions{
+    text-align:right;
+}
+
+.actions button{
+    background:#e74c3c;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.actions button:hover{
+    background:#c0392b;
+}
+
+/* EDITABLE AREAS */
+
+[contenteditable="true"]{
+    outline:none;
+}
+
+[contenteditable="true"]:hover{
+    background:#f9f9f9;
+}
+
+/* DRAG EFFECT */
+
+.dragging{
+    opacity:0.5;
+    border:2px dashed #3498db;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+    #portfolio{
+        width:95%;
+    }
+
+    header{
+        padding:20px;
+    }
+
+    #profileImage{
+        width:120px;
+        height:120px;
+    }
+
+    .toolbar button{
+        width:100%;
+        margin-top:10px;
+    }
+}
+@media print {
+
+    .toolbar,
+    #imageUpload,
+    .actions {
+        display: none;
+    }
+
+    body {
+        background: white;
+    }
+
+    .card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}
