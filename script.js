@@ -173,25 +173,18 @@ function enableDragAndDrop(){
 // DISABLE EDITING UI (for live/Netlify site)
 // -------------------------
 function disableEditingUI(){
-    // remove draggable attribute and contenteditable from all cards
     document.querySelectorAll(".card").forEach(card => {
         card.removeAttribute("draggable");
     });
+
     document.querySelectorAll('[contenteditable="true"]').forEach(el => {
         el.removeAttribute("contenteditable");
     });
 
-    // hide image upload input
-    if(imageUpload){
-        imageUpload.style.display = "none";
-    }
-
-    // hide all action buttons (Delete, Add Section, Save, etc.)
     document.querySelectorAll(".actions").forEach(el => {
         el.style.display = "none";
     });
 
-    // hide any element marked with class "edit-only"
     document.querySelectorAll(".edit-only").forEach(el => {
         el.style.display = "none";
     });
