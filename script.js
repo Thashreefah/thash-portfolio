@@ -1,40 +1,39 @@
 // -------------------------
 // LOCAL-ONLY EDIT MODE CHECK
 // -------------------------
+// Edit tools (Add Section, Save, drag-and-drop, contenteditable, file upload)
+// only run when this file is opened directly on your PC (localhost / 127.0.0.1 /
+// file://). On Netlify (or any other domain) editing is fully disabled and the
+// site renders as a plain static portfolio.
 const isLocal =
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1" ||
-    window.location.hostname === "";
+    window.location.hostname === "" ||
+    window.location.protocol === "file:";
 
 // -------------------------
-// PROFILE IMAGE UPLOAD
+// PROFILE IMAGE UPLOAD (local only, no persistence)
 // -------------------------
+// This only changes the image on screen while you're playing with it locally.
+// It is NOT saved anywhere — if you want a new photo permanently, replace the
+// image file/URL in index.html and re-run upload.bat.
 const imageUpload = document.getElementById("imageUpload");
 const profileImage = document.getElementById("profileImage");
-imageUpload.addEventListener("change", function () {
-    const file = this.files[0];
-    if(file){
-        const reader = new FileReader();
-        reader.onload = function(e){
-            profileImage.src = e.target.result;
-            localStorage.setItem(
-                "profileImage",
-                e.target.result
-            );
-        };
-        reader.readAsDataURL(file);
-    }
-});
-// -------------------------
-// LOAD SAVED IMAGE
-// -------------------------
-const savedImage =
-localStorage.getItem("profileImage");
-if(savedImage){
-    profileImage.src = savedImage;
+if (imageUpload && isLocal) {
+    imageUpload.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                profileImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 }
+
 // -------------------------
-// ADD NEW SECTION
+// ADD NEW SECTION (local only)
 // -------------------------
 function addSection(){
     if(!isLocal) return;
@@ -67,7 +66,7 @@ function addSection(){
     enableDragAndDrop();
 }
 // -------------------------
-// DELETE SECTION
+// DELETE SECTION (local only)
 // -------------------------
 function deleteSection(button){
     if(!isLocal) return;
@@ -79,38 +78,43 @@ function deleteSection(button){
     }
 }
 // -------------------------
-// SAVE PORTFOLIO
+// SAVE PORTFOLIO (local only — copies current HTML to clipboard
+// so you can paste it into index.html and run upload.bat)
 // -------------------------
 function savePortfolio(){
     if(!isLocal) return;
     const portfolioHTML =
     document.getElementById("portfolio")
     .innerHTML;
-    localStorage.setItem(
-        "portfolioData",
-        portfolioHTML
-    );
-    alert(
-        "Portfolio Saved Successfully!"
-    );
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(portfolioHTML).then(function () {
+            alert(
+                "Current portfolio HTML copied to clipboard!\n\n" +
+                "Paste it into the <main id=\"portfolio\"> section of index.html, " +
+                "save the file, then run upload.bat to publish it on Netlify."
+            );
+        }).catch(function () {
+            console.log(portfolioHTML);
+            alert(
+                "Could not copy automatically. The portfolio HTML has been printed " +
+                "to the browser console (press F12) — copy it from there into index.html."
+            );
+        });
+    } else {
+        console.log(portfolioHTML);
+        alert(
+            "The portfolio HTML has been printed to the browser console (press F12) " +
+            "— copy it from there into index.html, then run upload.bat."
+        );
+    }
 }
 // -------------------------
-// LOAD SAVED PORTFOLIO
+// INITIAL SETUP ON LOAD
 // -------------------------
 window.addEventListener(
     "load",
     function(){
-        const savedPortfolio =
-        localStorage.getItem(
-            "portfolioData"
-        );
-        if(savedPortfolio){
-            document.getElementById(
-                "portfolio"
-            ).innerHTML =
-            savedPortfolio;
-        }
-
         if(isLocal){
             enableDragAndDrop();
         } else {
@@ -119,7 +123,7 @@ window.addEventListener(
     }
 );
 // -------------------------
-// DRAG AND DROP
+// DRAG AND DROP (local only)
 // -------------------------
 function enableDragAndDrop(){
     if(!isLocal) return;
