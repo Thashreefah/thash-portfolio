@@ -107,26 +107,6 @@ header p{
     font-size:0.85rem;
 }
 
-.save-status{
-    text-align:center;
-    max-height:0;
-    overflow:hidden;
-    background:#E6F4EA;
-    color:#1F5E34;
-    font-size:0.85rem;
-    transition:all 0.2s ease;
-}
-
-.save-status.visible{
-    padding:10px;
-    max-height:60px;
-}
-
-.save-status.error{
-    background:var(--danger-bg);
-    color:#7A1F1F;
-}
-
 /* -------------------------
    TOOLBAR (cyan buttons)
 ------------------------- */
