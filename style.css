@@ -73,58 +73,11 @@ header p{
     background:rgba(0,184,217,0.08);
 }
 
-.image-link-row{
-    display:flex;
-    justify-content:center;
-    gap:8px;
+#imageUpload{
+    display:block;
     margin:22px auto 0;
-    flex-wrap:wrap;
-}
-
-.image-link-row input{
-    padding:8px 14px;
-    border-radius:8px;
-    border:1px solid rgba(0,184,217,0.4);
-    background:rgba(255,255,255,0.08);
-    color:#fff;
-    width:260px;
-    max-width:80vw;
-    font-size:0.85rem;
-}
-
-.image-link-row input::placeholder{
+    font-size:0.8rem;
     color:#C7CEDB;
-}
-
-.image-link-row button{
-    padding:8px 16px;
-    border:none;
-    border-radius:8px;
-    background:var(--cyan);
-    color:#fff;
-    font-weight:600;
-    cursor:pointer;
-    font-size:0.85rem;
-}
-
-.save-status{
-    text-align:center;
-    max-height:0;
-    overflow:hidden;
-    background:#E6F4EA;
-    color:#1F5E34;
-    font-size:0.85rem;
-    transition:all 0.2s ease;
-}
-
-.save-status.visible{
-    padding:10px;
-    max-height:60px;
-}
-
-.save-status.error{
-    background:var(--danger-bg);
-    color:#7A1F1F;
 }
 
 /* -------------------------
