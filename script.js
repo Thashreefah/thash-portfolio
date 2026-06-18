@@ -1,24 +1,27 @@
-// -------------------------
+// =========================================================
 // LOCAL-ONLY EDIT MODE CHECK
-// -------------------------
-// Edit tools (Add Section, Save, drag-and-drop, contenteditable, file upload)
-// only run when this file is opened directly on your PC (localhost / 127.0.0.1 /
-// file://). On Netlify (or any other domain) editing is fully disabled and the
-// site renders as a plain static portfolio.
+// =========================================================
+// Editing tools (Add Section, Save, Delete, drag-and-drop,
+// contenteditable text, image upload) ONLY run when this
+// file is opened directly on your own PC:
+//   - by double-clicking index.html (file:// protocol), or
+//   - via localhost / 127.0.0.1 (e.g. VS Code Live Server)
+//
+// On Netlify, or ANY other domain, isLocal is false and
+// disableEditingUI() runs, removing every editing feature.
+// =========================================================
 const isLocal =
+    window.location.protocol === "file:" ||
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1" ||
-    window.location.hostname === "" ||
-    window.location.protocol === "file:";
+    window.location.hostname === "";
 
-// -------------------------
-// PROFILE IMAGE UPLOAD (local only, no persistence)
-// -------------------------
-// This only changes the image on screen while you're playing with it locally.
-// It is NOT saved anywhere — if you want a new photo permanently, replace the
-// image file/URL in index.html and re-run upload.bat.
+// =========================================================
+// PROFILE IMAGE UPLOAD (local preview only — not saved)
+// =========================================================
 const imageUpload = document.getElementById("imageUpload");
 const profileImage = document.getElementById("profileImage");
+
 if (imageUpload && isLocal) {
     imageUpload.addEventListener("change", function () {
         const file = this.files[0];
@@ -32,151 +35,122 @@ if (imageUpload && isLocal) {
     });
 }
 
-// -------------------------
+// =========================================================
 // ADD NEW SECTION (local only)
-// -------------------------
-function addSection(){
-    if(!isLocal) return;
-    const title =
-    prompt("Enter Section Title");
-    if(!title) return;
-    const section =
-    document.createElement("section");
+// =========================================================
+function addSection() {
+    if (!isLocal) return;
+    const title = prompt("Enter Section Title");
+    if (!title) return;
+
+    const section = document.createElement("section");
     section.classList.add("card");
-    section.setAttribute(
-        "draggable",
-        "true"
-    );
+    section.setAttribute("draggable", "true");
     section.innerHTML = `
         <div class="actions">
-            <button onclick="deleteSection(this)">
-                Delete
-            </button>
+            <button onclick="deleteSection(this)">Delete</button>
         </div>
-        <h2 contenteditable="true">
-            ${title}
-        </h2>
-        <p contenteditable="true">
-            Click here and edit content.
-        </p>
+        <h2 contenteditable="true">${title}</h2>
+        <p contenteditable="true">Click here and edit content.</p>
     `;
-    document
-    .getElementById("portfolio")
-    .appendChild(section);
+
+    document.getElementById("portfolio").appendChild(section);
     enableDragAndDrop();
 }
-// -------------------------
+
+// =========================================================
 // DELETE SECTION (local only)
-// -------------------------
-function deleteSection(button){
-    if(!isLocal) return;
-    if(confirm("Delete this section?")){
-        button
-        .parentElement
-        .parentElement
-        .remove();
+// =========================================================
+function deleteSection(button) {
+    if (!isLocal) return;
+    if (confirm("Delete this section?")) {
+        button.parentElement.parentElement.remove();
     }
 }
-// -------------------------
-// SAVE PORTFOLIO (local only — copies current HTML to clipboard
-// so you can paste it into index.html and run upload.bat)
-// -------------------------
-function savePortfolio(){
-    if(!isLocal) return;
-    const portfolioHTML =
-    document.getElementById("portfolio")
-    .innerHTML;
+
+// =========================================================
+// SAVE PORTFOLIO (local only)
+// Copies the current portfolio HTML to your clipboard so you
+// can paste it into index.html, then run upload.bat to publish.
+// =========================================================
+function savePortfolio() {
+    if (!isLocal) return;
+
+    const portfolioHTML = document.getElementById("portfolio").innerHTML;
+
+    const showInstructions = function () {
+        alert(
+            "Portfolio HTML copied to clipboard!\n\n" +
+            "Next steps:\n" +
+            "1. Open index.html in your code editor\n" +
+            "2. Find <main id=\"portfolio\"> ... </main>\n" +
+            "3. Replace everything between those tags with the copied HTML\n" +
+            "4. Save the file\n" +
+            "5. Run upload.bat to publish to Netlify"
+        );
+    };
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(portfolioHTML).then(function () {
-            alert(
-                "Current portfolio HTML copied to clipboard!\n\n" +
-                "Paste it into the <main id=\"portfolio\"> section of index.html, " +
-                "save the file, then run upload.bat to publish it on Netlify."
-            );
-        }).catch(function () {
-            console.log(portfolioHTML);
-            alert(
-                "Could not copy automatically. The portfolio HTML has been printed " +
-                "to the browser console (press F12) — copy it from there into index.html."
-            );
-        });
+        navigator.clipboard.writeText(portfolioHTML)
+            .then(showInstructions)
+            .catch(function () {
+                console.log(portfolioHTML);
+                alert("Could not copy automatically. Open the browser console (F12) to copy the HTML manually.");
+            });
     } else {
         console.log(portfolioHTML);
-        alert(
-            "The portfolio HTML has been printed to the browser console (press F12) " +
-            "— copy it from there into index.html, then run upload.bat."
-        );
+        alert("Open the browser console (F12) to copy the portfolio HTML manually.");
     }
 }
-// -------------------------
+
+// =========================================================
 // INITIAL SETUP ON LOAD
-// -------------------------
-window.addEventListener(
-    "load",
-    function(){
-        if(isLocal){
-            enableDragAndDrop();
-        } else {
-            disableEditingUI();
-        }
+// =========================================================
+window.addEventListener("load", function () {
+    if (isLocal) {
+        enableDragAndDrop();
+    } else {
+        disableEditingUI();
     }
-);
-// -------------------------
+});
+
+// =========================================================
 // DRAG AND DROP (local only)
-// -------------------------
-function enableDragAndDrop(){
-    if(!isLocal) return;
-    const cards =
-    document.querySelectorAll(".card");
+// =========================================================
+function enableDragAndDrop() {
+    if (!isLocal) return;
+
+    const cards = document.querySelectorAll(".card");
     let draggedCard = null;
+
     cards.forEach(card => {
         card.setAttribute("draggable", "true");
-        card.addEventListener(
-            "dragstart",
-            function(){
-                draggedCard = this;
-                this.classList.add(
-                    "dragging"
-                );
+
+        card.addEventListener("dragstart", function () {
+            draggedCard = this;
+            this.classList.add("dragging");
+        });
+
+        card.addEventListener("dragend", function () {
+            this.classList.remove("dragging");
+        });
+
+        card.addEventListener("dragover", function (e) {
+            e.preventDefault();
+        });
+
+        card.addEventListener("drop", function () {
+            if (draggedCard && draggedCard !== this) {
+                this.parentNode.insertBefore(draggedCard, this);
             }
-        );
-        card.addEventListener(
-            "dragend",
-            function(){
-                this.classList.remove(
-                    "dragging"
-                );
-            }
-        );
-        card.addEventListener(
-            "dragover",
-            function(e){
-                e.preventDefault();
-            }
-        );
-        card.addEventListener(
-            "drop",
-            function(){
-                if(
-                    draggedCard &&
-                    draggedCard !== this
-                ){
-                    const parent =
-                    this.parentNode;
-                    parent.insertBefore(
-                        draggedCard,
-                        this
-                    );
-                }
-            }
-        );
+        });
     });
 }
-// -------------------------
-// DISABLE EDITING UI (for live/Netlify site)
-// -------------------------
-function disableEditingUI(){
+
+// =========================================================
+// DISABLE EDITING UI (runs on Netlify / any live domain)
+// =========================================================
+function disableEditingUI() {
     document.querySelectorAll(".card").forEach(card => {
         card.removeAttribute("draggable");
     });
