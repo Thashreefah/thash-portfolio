@@ -1,43 +1,4 @@
 // =========================================================
-// 1. INITIALIZE SUPABASE CONNECTION
-// =========================================================
-// FIXED: Changed from the dashboard URL to your actual public API URL endpoints
-const SUPABASE_URL = "https://rqltvmqdrmwhsarnlmzw.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxbHR2bXFkcm13aHNhcm5sbXp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3OTQxMTEsImV4cCI6MjA5NzM3MDExMX0.f4kPweKB09VxXojrD4IJ5pvJT1mpaIxr2SX6bnKX-SY";
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// =========================================================
-// 2. AUTOMATICALLY LOAD FROM CLOUD DATABASE
-// =========================================================
-async function loadPortfolioFromCloud() {
-    const { data, error } = await supabase
-        .from('portfolio_data')
-        .select('summary_text')
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-    if (error) {
-        console.error("Failed to load layout data from Supabase:", error.message);
-        return;
-    }
-
-    if (data && data.length > 0) {
-        // Replace the static HTML block with whatever layout was saved last
-        document.getElementById("portfolio").innerHTML = data[0].summary_text;
-        
-        // Re-initialize layout tools depending on whether we are local or hosted live
-        if (isLocal) {
-            enableDragAndDrop();
-        } else {
-            disableEditingUI();
-        }
-    }
-}
-
-// Run the data fetch immediately when the webpage finishes structural layout generation
-window.addEventListener('DOMContentLoaded', loadPortfolioFromCloud);
-
-// =========================================================
 // LOCAL-ONLY EDIT MODE CHECK
 // =========================================================
 const isLocal =
@@ -103,20 +64,65 @@ function deleteSection(button) {
 }
 
 // =========================================================
-// SAVE PORTFOLIO (Saves to Cloud instead of disk)
+// SAVE PORTFOLIO (Sends data to node server.js on your computer)
 // =========================================================
-async function savePortfolio() {
-    const portfolioContent = document.getElementById("portfolio").innerHTML;
+function savePortfolio() {
+    if (!isLocal) return;
 
-    // Send the layout directly to your Supabase cloud database table
-    const { data, error } = await supabase
-        .from('portfolio_data')
-        .insert([{ summary_text: portfolioContent }]);
+    const portfolioHTML = document.getElementById("portfolio").innerHTML;
 
-    if (error) {
-        alert("Failed to save to cloud database: " + error.message);
+    if (hasLocalServer) {
+        fetch("/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ portfolioHTML })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok) {
+                    alert(
+                        "Saved! index.html has been updated on disk.\n\n" +
+                        "Run upload.bat to publish these changes to Netlify."
+                    );
+                } else {
+                    alert("Save failed: " + (data.error || "Unknown error"));
+                }
+            })
+            .catch(err => {
+                alert(
+                    "Could not reach the local server.\n" +
+                    "Make sure you started it with: node server.js\n\n" +
+                    "(Error: " + err.message + ")"
+                );
+            });
+        return;
+    }
+
+    // Fallback: no local server running, use clipboard
+    const showInstructions = function () {
+        alert(
+            "Portfolio HTML copied to clipboard!\n\n" +
+            "Next steps:\n" +
+            "1. Open index.html in your code editor\n" +
+            "2. Find <main id=\"portfolio\"> ... </main>\n" +
+            "3. Replace everything between those tags with the copied HTML\n" +
+            "4. Save the file\n" +
+            "5. Run upload.bat to publish to Netlify\n\n" +
+            "Tip: run 'node server.js' and open localhost:3000 instead, " +
+            "and Save will write the file for you automatically."
+        );
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(portfolioHTML)
+            .then(showInstructions)
+            .catch(function () {
+                console.log(portfolioHTML);
+                alert("Could not copy automatically. Open the browser console (F12) to copy the HTML manually.");
+            });
     } else {
-        alert("Portfolio successfully saved to the cloud database!\n\nIt will now instantly update across Netlify, hosts, and other computers.");
+        console.log(portfolioHTML);
+        alert("Open the browser console (F12) to copy the portfolio HTML manually.");
     }
 }
 
@@ -172,7 +178,7 @@ function disableEditingUI() {
         card.removeAttribute("draggable");
     });
 
-    document.querySelectorAll('[contenteditable=\"true\"]').forEach(el => {
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
         el.removeAttribute("contenteditable");
     });
 
