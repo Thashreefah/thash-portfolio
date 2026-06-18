@@ -3,9 +3,10 @@
 // =========================================================
 // Editing tools (Add Section, Save, Delete, drag-and-drop,
 // contenteditable text, image upload) ONLY run when this
-// file is opened directly on your own PC:
+// page is opened locally on your PC:
 //   - by double-clicking index.html (file:// protocol), or
-//   - via localhost / 127.0.0.1 (e.g. VS Code Live Server)
+//   - via localhost / 127.0.0.1 (e.g. node server.js, or
+//     VS Code Live Server)
 //
 // On Netlify, or ANY other domain, isLocal is false and
 // disableEditingUI() runs, removing every editing feature.
@@ -15,6 +16,12 @@ const isLocal =
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1" ||
     window.location.hostname === "";
+
+// True only when running through node server.js (http/https + localhost),
+// not when just double-clicking the file (file:// protocol).
+const hasLocalServer =
+    (window.location.protocol === "http:" || window.location.protocol === "https:") &&
+    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
 
 // =========================================================
 // PROFILE IMAGE UPLOAD (local preview only — not saved)
@@ -70,14 +77,48 @@ function deleteSection(button) {
 
 // =========================================================
 // SAVE PORTFOLIO (local only)
-// Copies the current portfolio HTML to your clipboard so you
-// can paste it into index.html, then run upload.bat to publish.
+//
+// If running through node server.js (hasLocalServer = true):
+//   Sends the HTML to the local server, which writes it
+//   directly into index.html on disk. Nothing to copy/paste.
+//
+// If just opened by double-clicking the file (no server):
+//   Falls back to copying the HTML to your clipboard so you
+//   can paste it into index.html manually.
 // =========================================================
 function savePortfolio() {
     if (!isLocal) return;
 
     const portfolioHTML = document.getElementById("portfolio").innerHTML;
 
+    if (hasLocalServer) {
+        fetch("/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ portfolioHTML })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok) {
+                    alert(
+                        "Saved! index.html has been updated on disk.\n\n" +
+                        "Run upload.bat to publish these changes to Netlify."
+                    );
+                } else {
+                    alert("Save failed: " + (data.error || "Unknown error"));
+                }
+            })
+            .catch(err => {
+                alert(
+                    "Could not reach the local server.\n" +
+                    "Make sure you started it with: node server.js\n\n" +
+                    "(Error: " + err.message + ")"
+                );
+            });
+        return;
+    }
+
+    // Fallback: no local server running, use clipboard
     const showInstructions = function () {
         alert(
             "Portfolio HTML copied to clipboard!\n\n" +
@@ -86,7 +127,9 @@ function savePortfolio() {
             "2. Find <main id=\"portfolio\"> ... </main>\n" +
             "3. Replace everything between those tags with the copied HTML\n" +
             "4. Save the file\n" +
-            "5. Run upload.bat to publish to Netlify"
+            "5. Run upload.bat to publish to Netlify\n\n" +
+            "Tip: run 'node server.js' and open localhost:3000 instead, " +
+            "and Save will write the file for you automatically."
         );
     };
 
