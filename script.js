@@ -1,3 +1,28 @@
+// 1. Initialize Supabase Connection
+const SUPABASE_URL = "https://supabase.com/dashboard/project/rqltvmqdrmwhsarnlmzw/settings/api-keys"; // <-- Paste your Project URL here
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxbHR2bXFkcm13aHNhcm5sbXp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3OTQxMTEsImV4cCI6MjA5NzM3MDExMX0.f4kPweKB09VxXojrD4IJ5pvJT1mpaIxr2SX6bnKX-SY";      // <-- Paste your anon/public key here
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// 2. Automatically load your saved website whenever anyone visits it online
+async function loadPortfolioFromCloud() {
+    const { data, error } = await supabase
+        .from('portfolio_data')
+        .select('summary_text')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+    if (!error && data && data.length > 0) {
+        // This replaces your static text with your saved cloud changes!
+        document.getElementById("portfolio").innerHTML = data[0].summary_text;
+        
+        // Keep your layout working nicely after loading
+        if (typeof enableDragAndDrop === "function") enableDragAndDrop();
+        if (!isLocal && typeof disableEditingUI === "function") disableEditingUI();
+    }
+}
+window.addEventListener('DOMContentLoaded', loadPortfolioFromCloud);
+
+
 // =========================================================
 // LOCAL-ONLY EDIT MODE CHECK
 // =========================================================
@@ -86,66 +111,21 @@ function deleteSection(button) {
 //   Falls back to copying the HTML to your clipboard so you
 //   can paste it into index.html manually.
 // =========================================================
-function savePortfolio() {
-    if (!isLocal) return;
 
-    const portfolioHTML = document.getElementById("portfolio").innerHTML;
+async function savePortfolio() {
+    const portfolioContent = document.getElementById("portfolio").innerHTML;
 
-    if (hasLocalServer) {
-        fetch("/save", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ portfolioHTML })
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.ok) {
-                    alert(
-                        "Saved! index.html has been updated on disk.\n\n" +
-                        "Run upload.bat to publish these changes to Netlify."
-                    );
-                } else {
-                    alert("Save failed: " + (data.error || "Unknown error"));
-                }
-            })
-            .catch(err => {
-                alert(
-                    "Could not reach the local server.\n" +
-                    "Make sure you started it with: node server.js\n\n" +
-                    "(Error: " + err.message + ")"
-                );
-            });
-        return;
-    }
+    // Send the layout directly to your Supabase cloud database table
+    const { data, error } = await supabase
+        .from('portfolio_data')
+        .insert([{ summary_text: portfolioContent }]);
 
-    // Fallback: no local server running, use clipboard
-    const showInstructions = function () {
-        alert(
-            "Portfolio HTML copied to clipboard!\n\n" +
-            "Next steps:\n" +
-            "1. Open index.html in your code editor\n" +
-            "2. Find <main id=\"portfolio\"> ... </main>\n" +
-            "3. Replace everything between those tags with the copied HTML\n" +
-            "4. Save the file\n" +
-            "5. Run upload.bat to publish to Netlify\n\n" +
-            "Tip: run 'node server.js' and open localhost:3000 instead, " +
-            "and Save will write the file for you automatically."
-        );
-    };
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(portfolioHTML)
-            .then(showInstructions)
-            .catch(function () {
-                console.log(portfolioHTML);
-                alert("Could not copy automatically. Open the browser console (F12) to copy the HTML manually.");
-            });
+    if (error) {
+        alert("Failed to save to cloud: " + error.message);
     } else {
-        console.log(portfolioHTML);
-        alert("Open the browser console (F12) to copy the portfolio HTML manually.");
+        alert("Portfolio successfully saved to the cloud database!");
     }
 }
-
 // =========================================================
 // INITIAL SETUP ON LOAD
 // =========================================================
