@@ -1,9 +1,14 @@
-// 1. Initialize Supabase Connection
-const SUPABASE_URL = "https://supabase.com/dashboard/project/rqltvmqdrmwhsarnlmzw/settings/api-keys"; // <-- Paste your Project URL here
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxbHR2bXFkcm13aHNhcm5sbXp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3OTQxMTEsImV4cCI6MjA5NzM3MDExMX0.f4kPweKB09VxXojrD4IJ5pvJT1mpaIxr2SX6bnKX-SY";      // <-- Paste your anon/public key here
+// =========================================================
+// 1. INITIALIZE SUPABASE CONNECTION
+// =========================================================
+// FIXED: Changed from the dashboard URL to your actual public API URL endpoints
+const SUPABASE_URL = "https://rqltvmqdrmwhsarnlmzw.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxbHR2bXFkcm13aHNhcm5sbXp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3OTQxMTEsImV4cCI6MjA5NzM3MDExMX0.f4kPweKB09VxXojrD4IJ5pvJT1mpaIxr2SX6bnKX-SY";
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 2. Automatically load your saved website whenever anyone visits it online
+// =========================================================
+// 2. AUTOMATICALLY LOAD FROM CLOUD DATABASE
+// =========================================================
 async function loadPortfolioFromCloud() {
     const { data, error } = await supabase
         .from('portfolio_data')
@@ -11,30 +16,29 @@ async function loadPortfolioFromCloud() {
         .order('created_at', { ascending: false })
         .limit(1);
 
-    if (!error && data && data.length > 0) {
-        // This replaces your static text with your saved cloud changes!
+    if (error) {
+        console.error("Failed to load layout data from Supabase:", error.message);
+        return;
+    }
+
+    if (data && data.length > 0) {
+        // Replace the static HTML block with whatever layout was saved last
         document.getElementById("portfolio").innerHTML = data[0].summary_text;
         
-        // Keep your layout working nicely after loading
-        if (typeof enableDragAndDrop === "function") enableDragAndDrop();
-        if (!isLocal && typeof disableEditingUI === "function") disableEditingUI();
+        // Re-initialize layout tools depending on whether we are local or hosted live
+        if (isLocal) {
+            enableDragAndDrop();
+        } else {
+            disableEditingUI();
+        }
     }
 }
-window.addEventListener('DOMContentLoaded', loadPortfolioFromCloud);
 
+// Run the data fetch immediately when the webpage finishes structural layout generation
+window.addEventListener('DOMContentLoaded', loadPortfolioFromCloud);
 
 // =========================================================
 // LOCAL-ONLY EDIT MODE CHECK
-// =========================================================
-// Editing tools (Add Section, Save, Delete, drag-and-drop,
-// contenteditable text, image upload) ONLY run when this
-// page is opened locally on your PC:
-//   - by double-clicking index.html (file:// protocol), or
-//   - via localhost / 127.0.0.1 (e.g. node server.js, or
-//     VS Code Live Server)
-//
-// On Netlify, or ANY other domain, isLocal is false and
-// disableEditingUI() runs, removing every editing feature.
 // =========================================================
 const isLocal =
     window.location.protocol === "file:" ||
@@ -42,8 +46,6 @@ const isLocal =
     window.location.hostname === "127.0.0.1" ||
     window.location.hostname === "";
 
-// True only when running through node server.js (http/https + localhost),
-// not when just double-clicking the file (file:// protocol).
 const hasLocalServer =
     (window.location.protocol === "http:" || window.location.protocol === "https:") &&
     (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
@@ -101,17 +103,8 @@ function deleteSection(button) {
 }
 
 // =========================================================
-// SAVE PORTFOLIO (local only)
-//
-// If running through node server.js (hasLocalServer = true):
-//   Sends the HTML to the local server, which writes it
-//   directly into index.html on disk. Nothing to copy/paste.
-//
-// If just opened by double-clicking the file (no server):
-//   Falls back to copying the HTML to your clipboard so you
-//   can paste it into index.html manually.
+// SAVE PORTFOLIO (Saves to Cloud instead of disk)
 // =========================================================
-
 async function savePortfolio() {
     const portfolioContent = document.getElementById("portfolio").innerHTML;
 
@@ -121,11 +114,12 @@ async function savePortfolio() {
         .insert([{ summary_text: portfolioContent }]);
 
     if (error) {
-        alert("Failed to save to cloud: " + error.message);
+        alert("Failed to save to cloud database: " + error.message);
     } else {
-        alert("Portfolio successfully saved to the cloud database!");
+        alert("Portfolio successfully saved to the cloud database!\n\nIt will now instantly update across Netlify, hosts, and other computers.");
     }
 }
+
 // =========================================================
 // INITIAL SETUP ON LOAD
 // =========================================================
@@ -178,7 +172,7 @@ function disableEditingUI() {
         card.removeAttribute("draggable");
     });
 
-    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+    document.querySelectorAll('[contenteditable=\"true\"]').forEach(el => {
         el.removeAttribute("contenteditable");
     });
 
