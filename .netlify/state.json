@@ -1,0 +1,22 @@
+{
+	"siteId": "b519b231-8bed-4da0-bac5-c3ec257f05e3",
+	"dbConnectionString": "postgres://localhost:63644/postgres",
+	"geolocation": {
+		"data": {
+			"city": "Mangaluru",
+			"country": {
+				"code": "IN",
+				"name": "India"
+			},
+			"subdivision": {
+				"code": "KA",
+				"name": "Karnataka"
+			},
+			"timezone": "Asia/Kolkata",
+			"latitude": 12.9187,
+			"longitude": 74.8598,
+			"postalCode": "575013"
+		},
+		"timestamp": 1781598091236
+	}
+}

@@ -10,14 +10,8 @@
 
     <header>
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaSBQz4oSU9TeD-YvxP1p_onWoMlf-7y-4Galllqhs5w&s" id="profileImage" alt="Profile">
-        
         <h1 contenteditable="true">Thashreefah M</h1>
-        
-        <p contenteditable="true">
-            Assistant Professor, Computer Science
-        </p>
-
-        
+        <p contenteditable="true">Assistant Professor, Computer Science</p>
     </header>
 
     <div class="toolbar edit-only">
@@ -26,16 +20,19 @@
         <button onclick="downloadPDF()">Download PDF</button>
     </div>
 
+    <div class="edit-only" style="text-align: center; margin: 20px 0;">
+        <button onclick="savePortfolio()" style="padding: 12px 24px; background: #2ecc71; color: white; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; boxShadow: 0 4px 6px rgba(0,0,0,0.1);">
+            FORCE SAVE CLOUD & LOCAL
+        </button>
+    </div>
+
     <main id="portfolio">
 
-        <!-- PROFESSIONAL SUMMARY -->
         <section class="card" draggable="true">
             <div class="actions">
                 <button onclick="deleteSection(this)">Delete</button>
             </div>
-
             <h2 contenteditable="true">Professional Summary</h2>
-
             <p contenteditable="true">
                 Assistant Professor with a strong academic background in Computer Science
                 and experience teaching undergraduate and diploma students. Skilled in
@@ -46,32 +43,26 @@
             </p>
         </section>
 
-        <!-- EDUCATION -->
         <section class="card" draggable="true">
             <div class="actions">
                 <button onclick="deleteSection(this)">Delete</button>
             </div>
-
             <h2 contenteditable="true">Education</h2>
-
             <p contenteditable="true">
                 <strong>Master of Science (MSc) in Computer Science</strong><br>
                 Mangalore University, Konaje &mdash; 83%<br>
                 09/2022 &ndash; 06/2026
             </p>
-
             <p contenteditable="true">
                 <strong>Bachelor of Computer Applications (BCA)</strong><br>
                 Kanachur Institute of Management and Science, Deralakatte &mdash; 90.25%<br>
                 2018 &ndash; 2021
             </p>
-
             <p contenteditable="true">
                 <strong>Pre-University (XII) &mdash; CEBA</strong><br>
                 Kanachur Women's PU College, Deralakatte &mdash; 82.83%<br>
                 2016 &ndash; 2018
             </p>
-
             <p contenteditable="true">
                 <strong>SSLC</strong><br>
                 Al-Madeena English Medium High School, Naringana &mdash; 73.12%<br>
@@ -79,60 +70,45 @@
             </p>
         </section>
 
-        <!-- EXPERIENCE -->
         <section class="card" draggable="true">
             <div class="actions">
                 <button onclick="deleteSection(this)">Delete</button>
             </div>
-
             <h2 contenteditable="true">Professional Experience</h2>
-
             <p contenteditable="true">
                 <strong>Assistant Professor</strong><br>
                 Bearys Institute of Emerging Sciences, Innoli
             </p>
-
             <ul contenteditable="true">
                 <li>Taught BCA courses including Artificial Intelligence and Applications, Object-Oriented Programming using Java, C Programming, Cloud Computing, Discrete Mathematics, and Employability Skills</li>
                 <li>Handled Diploma (Mechanical and Computer Science) classes for IT Skills and Multimedia subjects</li>
                 <li>Designed lesson plans and academic materials as per the university curriculum</li>
-                 <li>Guided students in academic projects, seminars, and presentations</li>
+                <li>Guided students in academic projects, seminars, and presentations</li>
             </ul>
         </section>
 
-        <!-- TECHNICAL SKILLS -->
         <section class="card" draggable="true">
             <div class="actions">
                 <button onclick="deleteSection(this)">Delete</button>
             </div>
-
             <h2 contenteditable="true">Technical Skills</h2>
-
-            <p contenteditable="true">
-                <strong>Programming Languages &amp; Web Technologies</strong>
-            </p>
+            <p contenteditable="true"><strong>Programming Languages &amp; Web Technologies</strong></p>
             <ul contenteditable="true">
                 <li>C, C++, Java, Python, C#</li>
                 <li>HTML, CSS, PHP</li>
             </ul>
-
-            <p contenteditable="true">
-                <strong>Databases</strong>
-            </p>
+            <p contenteditable="true"><strong>Databases</strong></p>
             <ul contenteditable="true">
                 <li>Oracle</li>
-                <li>MySQL,MySQL Server</li>
+                <li>MySQL, MySQL Server</li>
             </ul>
         </section>
 
-        <!-- SOFT SKILLS -->
         <section class="card" draggable="true">
             <div class="actions">
                 <button onclick="deleteSection(this)">Delete</button>
             </div>
-
             <h2 contenteditable="true">Soft Skills</h2>
-
             <ul contenteditable="true">
                 <li>Communication and Presentation</li>
                 <li>Student Mentoring</li>
@@ -142,14 +118,11 @@
             </ul>
         </section>
 
-        <!-- PROJECTS -->
         <section class="card" draggable="true">
             <div class="actions">
                 <button onclick="deleteSection(this)">Delete</button>
             </div>
-
             <h2 contenteditable="true">Projects &amp; Internship</h2>
-
             <p contenteditable="true">
                 <strong>Iris Tracking System</strong> &mdash; Master's Degree Project (MSc Computer Science)
             </p>
@@ -158,7 +131,6 @@
                 <li>Processed image input for eye detection and tracking using computer vision techniques</li>
                 <li>Technologies: Python, OpenCV</li>
             </ul>
-
             <p contenteditable="true">
                 <strong>Age and Gender Prediction System</strong> &mdash; Mini Project
             </p>
@@ -167,15 +139,13 @@
                 <li>Used Kaggle dataset for training and testing the model</li>
                 <li>Technologies: Python, Machine Learning, Image Processing</li>
             </ul>
-</section>
+        </section>
 
- <!-- PROJECTS -->
         <section class="card" draggable="true">
             <div class="actions">
                 <button onclick="deleteSection(this)">Delete</button>
             </div>
             <h2 contenteditable="true">Projects &amp; Internship</h2>
-
             <p contenteditable="true">
                 <strong>Farm Management System</strong> &mdash; Bachelor's Degree Project (BCA), Internship at Amitech Solution (6 months)
             </p>
@@ -186,28 +156,18 @@
             </ul>
         </section>
 
-        <!-- CONTACT -->
         <section class="card" draggable="true">
             <div class="actions">
                 <button onclick="deleteSection(this)">Delete</button>
             </div>
-
             <h2 contenteditable="true">Contact</h2>
-
-            <p contenteditable="true">
-                Email: yourmail@example.com
-            </p>
-
-            <p contenteditable="true">
-                Phone: +91 XXXXX XXXXX
-            </p>
+            <p contenteditable="true">Email: yourmail@example.com</p>
+            <p contenteditable="true">Phone: +91 XXXXX XXXXX</p>
         </section>
 
     </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-      
-    <script src="script.js"></script>
 
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
 </body>
 </html>
